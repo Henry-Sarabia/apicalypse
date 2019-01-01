@@ -35,6 +35,14 @@ func Fields(fields ...string) func(*Query) error {
 }
 
 // Exclude is a functional option for setting the exluded fields in the results from a query.
+func Exclude(fields ...string) func(*Query) error {
+	return func(q *Query) error {
+		f := strings.Join(fields, ",")
+		f = removeWhitespace(f)
+		q.Filters["exclude"] = f
+		return nil
+	}
+}
 
 // Where is a functional option for setting a custom data filter similar to SQL.
 //

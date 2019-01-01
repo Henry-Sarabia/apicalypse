@@ -24,7 +24,7 @@ func NewRequest(url string, body *bytes.Buffer) (*http.Request, error) {
 	return req, nil
 }
 
-// Fields
+// Fields is a functional option for setting the included fields in the results from a query.
 func Fields(fields ...string) func(*Query) error {
 	return func(q *Query) error {
 		f := strings.Join(fields, ",")
@@ -34,11 +34,13 @@ func Fields(fields ...string) func(*Query) error {
 	}
 }
 
-//Exclude
+// Exclude is a functional option for setting the exluded fields in the results from a query.
 
-//Where
+// Where is a functional option for setting a custom data filter similar to SQL.
+//
 
-// Limit is a functional option for setting the limit filter on the provided query.
+// Limit is a functional option for setting the number of items to return from a query.
+// This usually has a maximum limit.
 func Limit(n int) func(*Query) error {
 	return func(q *Query) error {
 		q.Filters["limit"] = strconv.Itoa(n)
@@ -46,7 +48,7 @@ func Limit(n int) func(*Query) error {
 	}
 }
 
-// Offset
+// Offset is a functional option for setting the index to start returning results from a query.
 func Offset(n int) func(*Query) error {
 	return func(q *Query) error {
 		q.Filters["offset"] = strconv.Itoa(n)
@@ -54,7 +56,14 @@ func Offset(n int) func(*Query) error {
 	}
 }
 
-// Sort
+// Sort is a functional option for sorting the results of a query by a certain field's
+// values and the use of "asc" or "desc" to sort by ascending or descending order.
+func Sort(field, order string) func(*Query) error {
+	return func(q *Query) error {
+		q.Filters["sort"] = field + " " + order
+		return nil
+	}
+}
 
 //Search
 

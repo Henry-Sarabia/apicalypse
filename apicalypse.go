@@ -45,7 +45,15 @@ func Exclude(fields ...string) func(*Query) error {
 }
 
 // Where is a functional option for setting a custom data filter similar to SQL.
-//
+// If multiple filters are provided, they are AND'd together.
+// For the full list of filters and more information, visit: https://apicalypse.io/syntax/
+func Where(filters ...string) func(*Query) error {
+	return func(q *Query) error {
+		f := strings.Join(filters, " & ")
+		q.Filters["where"] = f
+		return nil
+	}
+}
 
 // Limit is a functional option for setting the number of items to return from a query.
 // This usually has a maximum limit.
@@ -73,7 +81,13 @@ func Sort(field, order string) func(*Query) error {
 	}
 }
 
-//Search
+// Search is a functional option for searching for a value.
+func Search(term string) func(*Query) error {
+	return func(q *Query) error {
+		q.Filters["search"] = term
+		return nil
+	}
+}
 
 // removeWhitespace returns the provided string with all of the whitespace removed.
 // This includes spaces, tabs, newlines, returns, and form feeds.

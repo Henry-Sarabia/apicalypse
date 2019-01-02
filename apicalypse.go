@@ -9,6 +9,9 @@ import (
 	"strings"
 )
 
+var ErrMissingInput = errors.New("missing input parameters")
+var ErrNegativeInput = errors.New("input cannot be a negative number")
+
 // Query contains the filters for a custom API query.
 type Query struct {
 	Filters map[string]string
@@ -27,9 +30,14 @@ func NewRequest(url string, body *bytes.Buffer) (*http.Request, error) {
 // Fields is a functional option for setting the included fields in the results from a query.
 func Fields(fields ...string) func(*Query) error {
 	return func(q *Query) error {
+		if len(fields) <= 0 {
+			return ErrMissingInput
+		}
+
 		f := strings.Join(fields, ",")
 		f = removeWhitespace(f)
 		q.Filters["fields"] = f
+
 		return nil
 	}
 }
@@ -37,9 +45,14 @@ func Fields(fields ...string) func(*Query) error {
 // Exclude is a functional option for setting the exluded fields in the results from a query.
 func Exclude(fields ...string) func(*Query) error {
 	return func(q *Query) error {
+		if len(fields) <= 0 {
+			return ErrMissingInput
+		}
+
 		f := strings.Join(fields, ",")
 		f = removeWhitespace(f)
 		q.Filters["exclude"] = f
+
 		return nil
 	}
 }
@@ -49,8 +62,13 @@ func Exclude(fields ...string) func(*Query) error {
 // For the full list of filters and more information, visit: https://apicalypse.io/syntax/
 func Where(filters ...string) func(*Query) error {
 	return func(q *Query) error {
+		if len(filters) <= 0 {
+			return ErrMissingInput
+		}
+
 		f := strings.Join(filters, " & ")
 		q.Filters["where"] = f
+
 		return nil
 	}
 }
@@ -59,7 +77,11 @@ func Where(filters ...string) func(*Query) error {
 // This usually has a maximum limit.
 func Limit(n int) func(*Query) error {
 	return func(q *Query) error {
+		if n < 0 {
+			return ErrNegativeInput
+		}
 		q.Filters["limit"] = strconv.Itoa(n)
+
 		return nil
 	}
 }
@@ -67,7 +89,11 @@ func Limit(n int) func(*Query) error {
 // Offset is a functional option for setting the index to start returning results from a query.
 func Offset(n int) func(*Query) error {
 	return func(q *Query) error {
+		if n < 0 {
+			return ErrNegativeInput
+		}
 		q.Filters["offset"] = strconv.Itoa(n)
+
 		return nil
 	}
 }

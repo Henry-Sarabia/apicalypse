@@ -7,8 +7,11 @@ import (
 	"strings"
 )
 
-var ErrMissingInput = errors.New("missing input parameters")
-var ErrNegativeInput = errors.New("input cannot be a negative number")
+var (
+	ErrMissingInput  = errors.New("missing input parameters")
+	ErrNegativeInput = errors.New("input cannot be a negative number")
+	ErrBlankField    = errors.New("a provided argument is blank or empty")
+)
 
 // options contains the optional filters for a custom API query.
 // The options type is not accessed directly but instead mutated
@@ -57,6 +60,12 @@ func Fields(fields ...string) FuncOption {
 			return ErrMissingInput
 		}
 
+		for _, f := range fields {
+			if isBlank(f) {
+				return ErrBlankField
+			}
+		}
+
 		f := strings.Join(fields, ",")
 		f = removeWhitespace(f)
 		opt.Filters["fields"] = f
@@ -70,6 +79,12 @@ func Exclude(fields ...string) FuncOption {
 	return func(opt *options) error {
 		if len(fields) <= 0 {
 			return ErrMissingInput
+		}
+
+		for _, f := range fields {
+			if isBlank(f) {
+				return ErrBlankField
+			}
 		}
 
 		f := strings.Join(fields, ",")
@@ -87,6 +102,12 @@ func Where(filters ...string) FuncOption {
 	return func(opt *options) error {
 		if len(filters) <= 0 {
 			return ErrMissingInput
+		}
+
+		for _, f := range filters {
+			if isBlank(f) {
+				return ErrBlankField
+			}
 		}
 
 		f := strings.Join(filters, " & ")
@@ -125,6 +146,10 @@ func Offset(n int) FuncOption {
 // values and the use of "asc" or "desc" to sort by ascending or descending order.
 func Sort(field, order string) FuncOption {
 	return func(opt *options) error {
+		if isBlank(field) || isBlank(order) {
+			return ErrBlankField
+		}
+
 		opt.Filters["sort"] = field + " " + order
 		return nil
 	}
@@ -133,6 +158,10 @@ func Sort(field, order string) FuncOption {
 // Search is a functional option for searching for a value.
 func Search(term string) FuncOption {
 	return func(opt *options) error {
+		if isBlank(term) {
+			return ErrBlankField
+		}
+
 		opt.Filters["search"] = term
 		return nil
 	}
@@ -143,4 +172,14 @@ func Search(term string) FuncOption {
 func removeWhitespace(s string) string {
 	space := regexp.MustCompile(`\s+`)
 	return space.ReplaceAllString(s, "")
+}
+
+// isBlank returns true if the provided string is empty or only consists of whitespace.
+// Returns false otherwise.
+func isBlank(s string) bool {
+	if removeWhitespace(s) == "" {
+		return true
+	}
+
+	return false
 }

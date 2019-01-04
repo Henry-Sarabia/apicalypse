@@ -1,7 +1,6 @@
 package apicalypse
 
 import (
-	"bytes"
 	"net/url"
 	"strings"
 )
@@ -41,29 +40,29 @@ func ComposeOptions(funcOpts ...FuncOption) FuncOption {
 	}
 }
 
-// encode returns the options' filters as a URL encoded string.
-func (o *options) encode() string {
+// string returns the options' filter as a single string.
+func (o *options) string() string {
 	if len(o.Filters) <= 0 {
 		return ""
 	}
+
 	b := strings.Builder{}
 	for k, v := range o.Filters {
 		b.WriteString(k + " " + v + "; ")
 	}
 
-	return url.PathEscape(b.String())
+	return b.String()
 }
 
-// buffer returns the options' filters as a *bytes.Buffer.
-func (o *options) buffer() *bytes.Buffer {
-	if len(o.Filters) <= 0 {
-		return nil
-	}
+// encodedString returns the options' filters as a URL encoded string.
+func (o *options) encodedString() string {
+	s := o.string()
+	return url.PathEscape(s)
+}
 
-	b := &bytes.Buffer{}
-	for k, v := range o.Filters {
-		b.WriteString(k + " " + v + "; ")
-	}
-
-	return b
+// reader returns the options' filters as a *strings.Reader
+// to satisfy the io.Reader interface.
+func (o *options) reader() *strings.Reader {
+	s := o.string()
+	return strings.NewReader(s)
 }

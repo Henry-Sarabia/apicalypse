@@ -1,6 +1,7 @@
 package apicalypse
 
 import (
+	"bytes"
 	"reflect"
 	"strings"
 	"testing"
@@ -61,30 +62,7 @@ func TestComposeOptions(t *testing.T) {
 	}
 }
 
-func TestEncode(t *testing.T) {
-	tests := []struct {
-		name  string
-		opt   *options
-		wants []string
-	}{
-		{"Zero filters", &options{Filters: map[string]string{}}, nil},
-		{"Single filter", &options{Filters: map[string]string{"limit": "15"}}, []string{"limit%2015%3B%20"}},
-		{"Multiple filters", &options{Filters: map[string]string{"limit": "15", "fields": "id,name,rating"}}, []string{"limit%2015%3B%20", "fields%20id%2Cname%2Crating%3B%20"}},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			got := test.opt.encode()
-
-			for _, want := range test.wants {
-				if !strings.Contains(got, want) {
-					t.Errorf("got: <%v>, want: <%v>", got, want)
-				}
-			}
-		})
-	}
-}
-
-func TestBuffer(t *testing.T) {
+func TestOptions_String(t *testing.T) {
 	tests := []struct {
 		name  string
 		opt   *options
@@ -96,7 +74,55 @@ func TestBuffer(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got := test.opt.buffer().String()
+			got := test.opt.string()
+
+			for _, want := range test.wants {
+				if !strings.Contains(got, want) {
+					t.Errorf("got: <%v>, want: <%v>", got, want)
+				}
+			}
+		})
+	}
+}
+
+func TestOptions_EncodedString(t *testing.T) {
+	tests := []struct {
+		name  string
+		opt   *options
+		wants []string
+	}{
+		{"Zero filters", &options{Filters: map[string]string{}}, nil},
+		{"Single filter", &options{Filters: map[string]string{"limit": "15"}}, []string{"limit%2015%3B%20"}},
+		{"Multiple filters", &options{Filters: map[string]string{"limit": "15", "fields": "id,name,rating"}}, []string{"limit%2015%3B%20", "fields%20id%2Cname%2Crating%3B%20"}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got := test.opt.encodedString()
+
+			for _, want := range test.wants {
+				if !strings.Contains(got, want) {
+					t.Errorf("got: <%v>, want: <%v>", got, want)
+				}
+			}
+		})
+	}
+}
+
+func TestOptions_Reader(t *testing.T) {
+	tests := []struct {
+		name  string
+		opt   *options
+		wants []string
+	}{
+		{"Zero filters", &options{Filters: map[string]string{}}, nil},
+		{"Single filter", &options{Filters: map[string]string{"limit": "15"}}, []string{"limit 15; "}},
+		{"Multiple filters", &options{Filters: map[string]string{"limit": "15", "fields": "id,name,rating"}}, []string{"limit 15; ", "fields id,name,rating; "}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			buf := bytes.Buffer{}
+			buf.ReadFrom(test.opt.reader())
+			got := buf.String()
 
 			for _, want := range test.wants {
 				if !strings.Contains(got, want) {

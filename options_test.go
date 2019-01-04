@@ -21,7 +21,7 @@ func TestNewOpt(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOpt(test.funcOpts...)
+			opt, err := newOptions(test.funcOpts...)
 			if !reflect.DeepEqual(err, test.expErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.expErr)
 			}
@@ -48,8 +48,8 @@ func TestComposeOptions(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			comp := ComposeOptions(test.funcOpts...)
 
-			expOpt, expErr := newOpt(test.funcOpts...)
-			actOpt, actErr := newOpt(comp)
+			expOpt, expErr := newOptions(test.funcOpts...)
+			actOpt, actErr := newOptions(comp)
 			if !reflect.DeepEqual(actErr, expErr) {
 				t.Fatalf("got: <%v>, want: <%v>", actErr, expErr)
 			}
@@ -76,7 +76,7 @@ func TestFields(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOpt()
+			opt, err := newOptions()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -110,7 +110,7 @@ func TestExclude(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOpt()
+			opt, err := newOptions()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -144,7 +144,7 @@ func TestWhere(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOpt()
+			opt, err := newOptions()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -175,7 +175,7 @@ func TestLimit(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOpt()
+			opt, err := newOptions()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -206,7 +206,7 @@ func TestOffset(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOpt()
+			opt, err := newOptions()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -239,7 +239,7 @@ func TestSort(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOpt()
+			opt, err := newOptions()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -269,7 +269,7 @@ func TestSearch(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOpt()
+			opt, err := newOptions()
 			if err != nil {
 				t.Fatal(err)
 			}

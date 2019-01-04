@@ -1,16 +1,37 @@
 package apicalypse
 
 import (
-	"bytes"
 	"github.com/pkg/errors"
 	"net/http"
 )
 
-// NewRequest returns a request configured for the provided url and with the provided body.
-func NewRequest(url string, body *bytes.Buffer) (*http.Request, error) {
-	req, err := http.NewRequest("GET", url, body)
+// URLRequest returns a request configured for the provided url using the provided method.
+// The provided query options are URL encoded and appended to the provided URL.
+func URLRequest(method string, url string, options ...FuncOption) (*http.Request, error) {
+	opt, err := newOptions(options...)
 	if err != nil {
-		return nil, errors.Wrapf(err, "cannot create request for url at '%s'", url)
+		return nil, errors.Wrap(err, "cannot create new options")
+	}
+
+	req, err := http.NewRequest(method, url+opt.encode(), nil)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot create request with method '%s' for url '%s'", method, url)
+	}
+
+	return req, nil
+}
+
+// BodyRequest returns a request configured for the provided url using the provided method.
+// The provided query options are written to the body of the request.
+func BodyRequest(method string, url string, options ...FuncOption) (*http.Request, error) {
+	opt, err := newOptions(options...)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot create new options")
+	}
+
+	req, err := http.NewRequest(method, url, opt.buffer())
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot create request with method '%s' for url '%s'", method, url)
 	}
 
 	return req, nil

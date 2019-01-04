@@ -15,9 +15,9 @@ func TestFields(t *testing.T) {
 		{"Single non-empty field", []string{"name"}, "name", nil},
 		{"Multiple non-empty fields", []string{"name", "popularity", "rating"}, "name,popularity,rating", nil},
 		{"Empty fields slice", []string{}, "", ErrMissingInput},
-		{"Single empty field", []string{"  "}, "", ErrBlankField},
-		{"Multiple empty fields", []string{"", " ", "", ""}, "", ErrBlankField},
-		{"Mixed empty and non-empty fields", []string{"", "id", "  ", "url"}, "", ErrBlankField},
+		{"Single empty field", []string{"  "}, "", ErrBlankArgument},
+		{"Multiple empty fields", []string{"", " ", "", ""}, "", ErrBlankArgument},
+		{"Mixed empty and non-empty fields", []string{"", "id", "  ", "url"}, "", ErrBlankArgument},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -49,9 +49,9 @@ func TestExclude(t *testing.T) {
 		{"Single non-empty field", []string{"name"}, "name", nil},
 		{"Multiple non-empty fields", []string{"name", "popularity", "rating"}, "name,popularity,rating", nil},
 		{"Empty fields slice", []string{}, "", ErrMissingInput},
-		{"Single empty field", []string{"  "}, "", ErrBlankField},
-		{"Multiple empty fields", []string{"", " ", "", ""}, "", ErrBlankField},
-		{"Mixed empty and non-empty fields", []string{"", "id", "  ", "url"}, "", ErrBlankField},
+		{"Single empty field", []string{"  "}, "", ErrBlankArgument},
+		{"Multiple empty fields", []string{"", " ", "", ""}, "", ErrBlankArgument},
+		{"Mixed empty and non-empty fields", []string{"", "id", "  ", "url"}, "", ErrBlankArgument},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -83,9 +83,9 @@ func TestWhere(t *testing.T) {
 		{"Single non-empty filter", []string{"b.count >= 14"}, "b.count >= 14", nil},
 		{"Multiple non-empty filters", []string{"b.count >= 14", "a != n"}, "b.count >= 14 & a != n", nil},
 		{"Empty filters slice", []string{}, "", ErrMissingInput},
-		{"Single empty filter", []string{" "}, "", ErrBlankField},
-		{"Multiple empty filters", []string{"", " ", "  "}, "", ErrBlankField},
-		{"Mixed empty and non-empty filters", []string{"b.count >= 14", "", "a != n", " "}, "", ErrBlankField},
+		{"Single empty filter", []string{" "}, "", ErrBlankArgument},
+		{"Multiple empty filters", []string{"", " ", "  "}, "", ErrBlankArgument},
+		{"Mixed empty and non-empty filters", []string{"b.count >= 14", "", "a != n", " "}, "", ErrBlankArgument},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -178,9 +178,9 @@ func TestSort(t *testing.T) {
 		wantErr  error
 	}{
 		{"Non-empty field and non-empty order", "b.count", "desc", "b.count desc", nil},
-		{"Non-empty field and empty order", "b.count", " ", "", ErrBlankField},
-		{"Empty field and non-empty order", "", "desc", "", ErrBlankField},
-		{"Empty field and empty order", "", "", "", ErrBlankField},
+		{"Non-empty field and empty order", "b.count", " ", "", ErrBlankArgument},
+		{"Empty field and non-empty order", "", "desc", "", ErrBlankArgument},
+		{"Empty field and empty order", "", "", "", ErrBlankArgument},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -210,7 +210,7 @@ func TestSearch(t *testing.T) {
 		wantErr  error
 	}{
 		{"Non-empty term", "halo", "halo", nil},
-		{"Empty term", "", "", ErrBlankField},
+		{"Empty term", "", "", ErrBlankArgument},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

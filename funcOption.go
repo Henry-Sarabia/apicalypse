@@ -10,7 +10,7 @@ import (
 var (
 	ErrMissingInput  = errors.New("missing input parameters")
 	ErrNegativeInput = errors.New("input cannot be a negative number")
-	ErrBlankField    = errors.New("a provided argument is blank or empty")
+	ErrBlankArgument = errors.New("a provided argument is blank or empty")
 )
 
 // FuncOption is a functional option type used to set the options for an API query.
@@ -27,7 +27,7 @@ func Fields(fields ...string) FuncOption {
 
 		for _, f := range fields {
 			if isBlank(f) {
-				return ErrBlankField
+				return ErrBlankArgument
 			}
 		}
 
@@ -48,7 +48,7 @@ func Exclude(fields ...string) FuncOption {
 
 		for _, f := range fields {
 			if isBlank(f) {
-				return ErrBlankField
+				return ErrBlankArgument
 			}
 		}
 
@@ -71,7 +71,7 @@ func Where(filters ...string) FuncOption {
 
 		for _, f := range filters {
 			if isBlank(f) {
-				return ErrBlankField
+				return ErrBlankArgument
 			}
 		}
 
@@ -112,7 +112,7 @@ func Offset(n int) FuncOption {
 func Sort(field, order string) FuncOption {
 	return func(opt *options) error {
 		if isBlank(field) || isBlank(order) {
-			return ErrBlankField
+			return ErrBlankArgument
 		}
 
 		opt.Filters["sort"] = field + " " + order
@@ -124,7 +124,7 @@ func Sort(field, order string) FuncOption {
 func Search(term string) FuncOption {
 	return func(opt *options) error {
 		if isBlank(term) {
-			return ErrBlankField
+			return ErrBlankArgument
 		}
 
 		opt.Filters["search"] = term

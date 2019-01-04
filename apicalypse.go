@@ -18,7 +18,7 @@ func URLRequest(method string, url string, options ...FuncOption) (*http.Request
 		return nil, errors.Wrap(err, "cannot create new options")
 	}
 
-	url = url + opt.encode()
+	url = url + opt.encodedString()
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot create request with method '%s' for url '%s'", method, url)

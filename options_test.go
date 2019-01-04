@@ -10,8 +10,8 @@ func TestNewOptions(t *testing.T) {
 	tests := []struct {
 		name     string
 		funcOpts []FuncOption
-		expOpts  *options
-		expErr   error
+		wantOpts *options
+		wantErr  error
 	}{
 		{"Empty option", []FuncOption{}, &options{Filters: map[string]string{}}, nil},
 		{"Single option", []FuncOption{Limit(15)}, &options{map[string]string{"limit": "15"}}, nil},
@@ -23,12 +23,12 @@ func TestNewOptions(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			opt, err := newOptions(test.funcOpts...)
-			if !reflect.DeepEqual(err, test.expErr) {
-				t.Errorf("got: <%v>, want: <%v>", err, test.expErr)
+			if !reflect.DeepEqual(err, test.wantErr) {
+				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if !reflect.DeepEqual(opt, test.expOpts) {
-				t.Errorf("got: <%v>, want: <%v>", opt, test.expOpts)
+			if !reflect.DeepEqual(opt, test.wantOpts) {
+				t.Errorf("got: <%v>, want: <%v>", opt, test.wantOpts)
 			}
 		})
 	}
@@ -49,13 +49,13 @@ func TestComposeOptions(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			comp := ComposeOptions(test.funcOpts...)
 
-			expOpt, expErr := newOptions(test.funcOpts...)
-			actOpt, actErr := newOptions(comp)
-			if !reflect.DeepEqual(actErr, expErr) {
-				t.Fatalf("got: <%v>, want: <%v>", actErr, expErr)
+			wantOpt, wantErr := newOptions(test.funcOpts...)
+			gotOpt, gotErr := newOptions(comp)
+			if !reflect.DeepEqual(gotErr, wantErr) {
+				t.Errorf("got: <%v>, want: <%v>", gotErr, wantErr)
 			}
-			if !reflect.DeepEqual(actOpt, expOpt) {
-				t.Fatalf("got: <%v>, want: <%v>", actOpt, expOpt)
+			if !reflect.DeepEqual(gotOpt, wantOpt) {
+				t.Errorf("got: <%v>, want: <%v>", gotOpt, wantOpt)
 			}
 		})
 	}

@@ -7,10 +7,10 @@ import (
 
 func TestFields(t *testing.T) {
 	tests := []struct {
-		name      string
-		fields    []string
-		expFields string
-		expErr    error
+		name       string
+		fields     []string
+		wantFields string
+		wantErr    error
 	}{
 		{"Single non-empty field", []string{"name"}, "name", nil},
 		{"Multiple non-empty fields", []string{"name", "popularity", "rating"}, "name,popularity,rating", nil},
@@ -28,12 +28,12 @@ func TestFields(t *testing.T) {
 
 			err = Fields(test.fields...)(opt)
 
-			if !reflect.DeepEqual(err, test.expErr) {
-				t.Errorf("got: <%v>, want: <%v>", err, test.expErr)
+			if !reflect.DeepEqual(err, test.wantErr) {
+				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["fields"] != test.expFields {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["fields"], test.expFields)
+			if opt.Filters["fields"] != test.wantFields {
+				t.Errorf("got: <%v>, want: <%v>", opt.Filters["fields"], test.wantFields)
 			}
 		})
 	}
@@ -41,10 +41,10 @@ func TestFields(t *testing.T) {
 
 func TestExclude(t *testing.T) {
 	tests := []struct {
-		name      string
-		fields    []string
-		expFields string
-		expErr    error
+		name       string
+		fields     []string
+		wantFields string
+		wantErr    error
 	}{
 		{"Single non-empty field", []string{"name"}, "name", nil},
 		{"Multiple non-empty fields", []string{"name", "popularity", "rating"}, "name,popularity,rating", nil},
@@ -62,12 +62,12 @@ func TestExclude(t *testing.T) {
 
 			err = Exclude(test.fields...)(opt)
 
-			if !reflect.DeepEqual(err, test.expErr) {
-				t.Errorf("got: <%v>, want: <%v>", err, test.expErr)
+			if !reflect.DeepEqual(err, test.wantErr) {
+				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["exclude"] != test.expFields {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["exclude"], test.expFields)
+			if opt.Filters["exclude"] != test.wantFields {
+				t.Errorf("got: <%v>, want: <%v>", opt.Filters["exclude"], test.wantFields)
 			}
 		})
 	}
@@ -75,10 +75,10 @@ func TestExclude(t *testing.T) {
 
 func TestWhere(t *testing.T) {
 	tests := []struct {
-		name       string
-		filters    []string
-		expFilters string
-		expErr     error
+		name        string
+		filters     []string
+		wantFilters string
+		wantErr     error
 	}{
 		{"Single non-empty filter", []string{"b.count >= 14"}, "b.count >= 14", nil},
 		{"Multiple non-empty filters", []string{"b.count >= 14", "a != n"}, "b.count >= 14 & a != n", nil},
@@ -96,12 +96,12 @@ func TestWhere(t *testing.T) {
 
 			err = Where(test.filters...)(opt)
 
-			if !reflect.DeepEqual(err, test.expErr) {
-				t.Errorf("got: <%v>, want: <%v>", err, test.expErr)
+			if !reflect.DeepEqual(err, test.wantErr) {
+				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["where"] != test.expFilters {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["where"], test.expFilters)
+			if opt.Filters["where"] != test.wantFilters {
+				t.Errorf("got: <%v>, want: <%v>", opt.Filters["where"], test.wantFilters)
 			}
 		})
 	}
@@ -109,10 +109,10 @@ func TestWhere(t *testing.T) {
 
 func TestLimit(t *testing.T) {
 	tests := []struct {
-		name     string
-		limit    int
-		expLimit string
-		expErr   error
+		name      string
+		limit     int
+		wantLimit string
+		wantErr   error
 	}{
 		{"Positive limit", 25, "25", nil},
 		{"Zero limit", 0, "0", nil},
@@ -127,12 +127,12 @@ func TestLimit(t *testing.T) {
 
 			err = Limit(test.limit)(opt)
 
-			if !reflect.DeepEqual(err, test.expErr) {
-				t.Errorf("got: <%v>, want: <%v>", err, test.expErr)
+			if !reflect.DeepEqual(err, test.wantErr) {
+				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["limit"] != test.expLimit {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["limit"], test.expLimit)
+			if opt.Filters["limit"] != test.wantLimit {
+				t.Errorf("got: <%v>, want: <%v>", opt.Filters["limit"], test.wantLimit)
 			}
 		})
 	}
@@ -140,10 +140,10 @@ func TestLimit(t *testing.T) {
 
 func TestOffset(t *testing.T) {
 	tests := []struct {
-		name      string
-		offset    int
-		expOffset string
-		expErr    error
+		name       string
+		offset     int
+		wantOffset string
+		wantErr    error
 	}{
 		{"Positive offset", 10, "10", nil},
 		{"Zero offset", 0, "0", nil},
@@ -158,12 +158,12 @@ func TestOffset(t *testing.T) {
 
 			err = Offset(test.offset)(opt)
 
-			if !reflect.DeepEqual(err, test.expErr) {
-				t.Errorf("got: <%v>, want: <%v>", err, test.expErr)
+			if !reflect.DeepEqual(err, test.wantErr) {
+				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["offset"] != test.expOffset {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["offset"], test.expOffset)
+			if opt.Filters["offset"] != test.wantOffset {
+				t.Errorf("got: <%v>, want: <%v>", opt.Filters["offset"], test.wantOffset)
 			}
 		})
 	}
@@ -171,11 +171,11 @@ func TestOffset(t *testing.T) {
 
 func TestSort(t *testing.T) {
 	tests := []struct {
-		name    string
-		field   string
-		order   string
-		expSort string
-		expErr  error
+		name     string
+		field    string
+		order    string
+		wantSort string
+		wantErr  error
 	}{
 		{"Non-empty field and non-empty order", "b.count", "desc", "b.count desc", nil},
 		{"Non-empty field and empty order", "b.count", " ", "", ErrBlankField},
@@ -191,12 +191,12 @@ func TestSort(t *testing.T) {
 
 			err = Sort(test.field, test.order)(opt)
 
-			if !reflect.DeepEqual(err, test.expErr) {
-				t.Errorf("got: <%v>, want: <%v>", err, test.expErr)
+			if !reflect.DeepEqual(err, test.wantErr) {
+				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["sort"] != test.expSort {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["sort"], test.expSort)
+			if opt.Filters["sort"] != test.wantSort {
+				t.Errorf("got: <%v>, want: <%v>", opt.Filters["sort"], test.wantSort)
 			}
 		})
 	}
@@ -204,10 +204,10 @@ func TestSort(t *testing.T) {
 
 func TestSearch(t *testing.T) {
 	tests := []struct {
-		name    string
-		term    string
-		expTerm string
-		expErr  error
+		name     string
+		term     string
+		wantTerm string
+		wantErr  error
 	}{
 		{"Non-empty term", "halo", "halo", nil},
 		{"Empty term", "", "", ErrBlankField},
@@ -221,12 +221,12 @@ func TestSearch(t *testing.T) {
 
 			err = Search(test.term)(opt)
 
-			if !reflect.DeepEqual(err, test.expErr) {
-				t.Errorf("got: <%v>, want: <%v>", err, test.expErr)
+			if !reflect.DeepEqual(err, test.wantErr) {
+				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["search"] != test.expTerm {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["search"], test.expTerm)
+			if opt.Filters["search"] != test.wantTerm {
+				t.Errorf("got: <%v>, want: <%v>", opt.Filters["search"], test.wantTerm)
 			}
 		})
 	}
@@ -234,9 +234,9 @@ func TestSearch(t *testing.T) {
 
 func TestRemoveWhitespace(t *testing.T) {
 	tests := []struct {
-		name string
-		s    string
-		exp  string
+		name  string
+		input string
+		want  string
 	}{
 		{"Empty", "", ""},
 		{"Space", " ", ""},
@@ -257,10 +257,10 @@ func TestRemoveWhitespace(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			s := removeWhitespace(test.s)
+			s := removeWhitespace(test.input)
 
-			if s != test.exp {
-				t.Errorf("got: <%v>, want: <%v>", s, test.exp)
+			if s != test.want {
+				t.Errorf("got: <%v>, want: <%v>", s, test.want)
 			}
 		})
 	}
@@ -268,9 +268,9 @@ func TestRemoveWhitespace(t *testing.T) {
 
 func TestIsBlank(t *testing.T) {
 	tests := []struct {
-		name string
-		s    string
-		exp  bool
+		name  string
+		input string
+		want  bool
 	}{
 		{"Empty", "", true},
 		{"Space", " ", true},
@@ -291,10 +291,10 @@ func TestIsBlank(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			b := isBlank(test.s)
+			b := isBlank(test.input)
 
-			if b != test.exp {
-				t.Errorf("got: <%v>, want: <%v>", b, test.exp)
+			if b != test.want {
+				t.Errorf("got: <%v>, want: <%v>", b, test.want)
 			}
 		})
 	}

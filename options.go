@@ -1,7 +1,6 @@
 package apicalypse
 
 import (
-	"net/url"
 	"strings"
 )
 
@@ -52,12 +51,6 @@ func (o *options) string() string {
 	}
 
 	return b.String()
-}
-
-// encodedString returns the options' filters as a URL encoded string.
-func (o *options) encodedString() string {
-	s := o.string()
-	return url.PathEscape(s)
 }
 
 // reader returns the options' filters as a *strings.Reader

@@ -1,6 +1,7 @@
 package apicalypse
 
 import (
+	"github.com/pkg/errors"
 	"strings"
 )
 
@@ -18,7 +19,7 @@ func newOptions(funcOpts ...FuncOption) (*options, error) {
 
 	for _, f := range funcOpts {
 		if err := f(opt); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "cannot create new options")
 		}
 	}
 
@@ -32,7 +33,7 @@ func ComposeOptions(funcOpts ...FuncOption) FuncOption {
 	return func(opt *options) error {
 		for _, f := range funcOpts {
 			if err := f(opt); err != nil {
-				return err
+				return errors.Wrap(err, "cannot compose functional options")
 			}
 		}
 		return nil

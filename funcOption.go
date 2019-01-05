@@ -8,9 +8,12 @@ import (
 )
 
 var (
-	ErrMissingInput  = errors.New("missing input parameters")
-	ErrNegativeInput = errors.New("input cannot be a negative number")
+	// ErrMissingInput occurs when a function is called without input parameters (e.g. nil slice)
+	ErrMissingInput = errors.New("missing input parameters")
+	// ErrBlankargument occurs when a function is called with a blank argument that should not be blank.
 	ErrBlankArgument = errors.New("a provided argument is blank or empty")
+	// ErrNegativeInput occurs when a function is called with a negative number that should not be negative.
+	ErrNegativeInput = errors.New("input cannot be a negative number")
 )
 
 // FuncOption is a functional option type used to set the options for an API query.

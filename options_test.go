@@ -2,6 +2,7 @@ package apicalypse
 
 import (
 	"bytes"
+	"github.com/pkg/errors"
 	"reflect"
 	"strings"
 	"testing"
@@ -24,7 +25,7 @@ func TestNewOptions(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			opt, err := newOptions(test.funcOpts...)
-			if !reflect.DeepEqual(err, test.wantErr) {
+			if !reflect.DeepEqual(errors.Cause(err), test.wantErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
@@ -52,8 +53,8 @@ func TestComposeOptions(t *testing.T) {
 
 			wantOpt, wantErr := newOptions(test.funcOpts...)
 			gotOpt, gotErr := newOptions(comp)
-			if !reflect.DeepEqual(gotErr, wantErr) {
-				t.Errorf("got: <%v>, want: <%v>", gotErr, wantErr)
+			if !reflect.DeepEqual(errors.Cause(gotErr), errors.Cause(wantErr)) {
+				t.Errorf("got: <%v>, want: <%v>", errors.Cause(gotErr), errors.Cause(wantErr))
 			}
 			if !reflect.DeepEqual(gotOpt, wantOpt) {
 				t.Errorf("got: <%v>, want: <%v>", gotOpt, wantOpt)

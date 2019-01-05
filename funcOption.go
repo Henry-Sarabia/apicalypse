@@ -15,7 +15,8 @@ var (
 
 // FuncOption is a functional option type used to set the options for an API query.
 // FuncOption is the first-order function returned by the available functional options
-// (e.g. Fields or Limit).
+// (e.g. Fields or Limit). For the full list of supported filters and their expected
+// syntax, please visit: https://apicalypse.io/syntax/
 type FuncOption func(*options) error
 
 // Fields is a functional option for setting the included fields in the results from a query.
@@ -39,7 +40,7 @@ func Fields(fields ...string) FuncOption {
 	}
 }
 
-// Exclude is a functional option for setting the exluded fields in the results from a query.
+// Exclude is a functional option for setting the excluded fields in the results from a query.
 func Exclude(fields ...string) FuncOption {
 	return func(opt *options) error {
 		if len(fields) <= 0 {

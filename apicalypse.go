@@ -6,8 +6,7 @@ import (
 )
 
 // NewRequest returns a request configured for the provided url using the provided method.
-// The provided query options are written to the body of the request.
-// The default method is GET.
+// The provided query options are written to the body of the request. The default method is GET.
 func NewRequest(method string, url string, options ...FuncOption) (*http.Request, error) {
 	if isBlank(url) {
 		return nil, ErrBlankArgument

@@ -381,7 +381,6 @@ func ExampleExclude() {
 }
 
 func ExampleWhere() {
-
 	// Retrieve games with a rating equal to 50
 	req, _ := NewRequest("GET", "https://some-internet-game-database-api/games/", Where("rating = 50"))
 
@@ -404,16 +403,19 @@ func ExampleWhere() {
 	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres = [Roleplaying, Adventure, MMO]"))
 
 	// Retrieve games without all of the following genres: genres Roleplaying, Adventure, and MMO
-	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres != [1, 2, 3]"))
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres != [Roleplaying, Adventure, MMO]"))
 
 	// Retrieve games with at least one of the following genres: Roleplaying, Adventure, or MMO
-	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres = (1, 2, 3)"))
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres = (Roleplaying, Adventure, MMO)"))
 
 	// Retrieve games without any of the following genres: Roleplaying, Adventure, or MMO
-	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres != (1, 2, 3)"))
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres != (Roleplaying, Adventure, MMO)"))
 
 	// Retrieve games with exclusively the following genres: Roleplaying, Adventure, or MMO
-	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres = {1, 2, 3}"))
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres = {Roleplaying, Adventure, MMO}"))
+
+	// Retrieve games with a rating greater than 50 AND with at least one of the following genres: Roleplaying, Adventure, or MMO
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("rating > 50", "genres = (Roleplaying, Adventure, MMO)"))
 
 	// Execute latest request
 	http.DefaultClient.Do(req)

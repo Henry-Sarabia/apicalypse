@@ -138,7 +138,18 @@ Functional option composition reduces duplicate code and helps keep your code
 DRY. You can even compose newly composed functional options for even more
 finely grained control over similar queries.
 
+## Examples
+
+The repository contains a few examples that demonstrate how one could use the `apicalypse`
+package. The examples can be found in their respective test files or be read conveniently on the
+GoDoc reference found [here](https://godoc.org/github.com/Henry-Sarabia/apicalypse#pkg-examples).
+
+If you have used the `apicalypse` package for a project and would like to have it featured
+here as a reference for new users, please submit an issue or pull request and I'll be sure to
+add it. Thank you!
+
 ## Contributions
+
 If you would like to contribute to this project, please adhere to the following
 guidelines.
 
@@ -154,3 +165,10 @@ guidelines.
 I'll review pull requests as they come in and merge them if everything checks out.
 
 Again, any contribution is greatly appreciated!
+
+## Special Thanks
+
+* The [IGDB](https://github.com/igdb) team who developed Apicalypse with an accompanying [Node client](https://github.com/igdb/node-apicalypse)
+* The helpful community over on the IGDB [Discord server](https://discord.gg/pXn8Jh9) 
+* The insightful Dave Cheney for his [article](https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis)
+on functional options

@@ -1,6 +1,8 @@
 package apicalypse
 
 import (
+	"fmt"
+	"net/http"
 	"reflect"
 	"testing"
 )
@@ -298,4 +300,177 @@ func TestIsBlank(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleComposeOptions() {
+	// Composing FuncOptions to filter out unpopular results
+	composedOpts := ComposeOptions(
+		Fields("title", "username", "game", "likes", "content"),
+		Where("likes > 10"),
+		Where("views >= 200"),
+		Limit(25),
+	)
+
+	// Using composed FuncOptions
+	req1, err := NewRequest("GET", "https://some-internet-game-database-api/games/", composedOpts)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Reusing composed FuncOptions
+	req2, err := NewRequest("GET", "https://some-internet-game-database-api/games/", composedOpts, Offset(25))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Retrieves first set of 15 popular games
+	http.DefaultClient.Do(req1)
+	// Retrieves second set of 15 popular games
+	http.DefaultClient.Do(req2)
+}
+
+func ExampleFields() {
+	// Retrieve games with name field
+	req, _ := NewRequest("GET", "https://some-internet-game-database-api/games/", Fields("name"))
+
+	// Retrieve games with genres field
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Fields("genres"))
+
+	// Retrieve games with both name and genres field
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Fields("name", "genres"))
+
+	// Retrieve games with a parent game
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Fields("parent_game"))
+
+	// Retrieve games with a parent game name
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Fields("parent_game.name"))
+
+	// Retrieve games with any number of fields
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Fields("name", "genres", "popularity", "rating"))
+
+	// Retrieve games with all available fields
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Fields("*"))
+
+	// Execute latest request
+	http.DefaultClient.Do(req)
+}
+
+func ExampleExclude() {
+	// Retrieve games without name field
+	req, _ := NewRequest("GET", "https://some-internet-game-database-api/games/", Exclude("name"))
+
+	// Retrieve games without genres field
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Exclude("genres"))
+
+	// Retrieve games without name or genres field
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Exclude("name", "genres"))
+
+	// Retrieve games without parent game
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Exclude("parent_game"))
+
+	// Retrieve games without parent game name
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Exclude("parent_game.name"))
+
+	// Retrieve games without any number of fields
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Exclude("name", "genres", "popularity", "rating"))
+
+	// Execute latest request
+	http.DefaultClient.Do(req)
+}
+
+func ExampleWhere() {
+
+	// Retrieve games with a rating equal to 50
+	req, _ := NewRequest("GET", "https://some-internet-game-database-api/games/", Where("rating = 50"))
+
+	// Retrieve games with a rating not equal to 50
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("rating != 50"))
+
+	// Retrieve games with a rating greater than 50
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("rating > 50"))
+
+	// Retrieve games with a rating greater than or equal to 50
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("rating >= 50"))
+
+	// Retrieve games with a rating less than 50
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("rating < 50"))
+
+	// Retrieve games with a rating less than or equal to 50
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("rating <= 50"))
+
+	// Retrieve games with all of the following genres: Roleplaying, Adventure, and MMO
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres = [Roleplaying, Adventure, MMO]"))
+
+	// Retrieve games without all of the following genres: genres Roleplaying, Adventure, and MMO
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres != [1, 2, 3]"))
+
+	// Retrieve games with at least one of the following genres: Roleplaying, Adventure, or MMO
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres = (1, 2, 3)"))
+
+	// Retrieve games without any of the following genres: Roleplaying, Adventure, or MMO
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres != (1, 2, 3)"))
+
+	// Retrieve games with exclusively the following genres: Roleplaying, Adventure, or MMO
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Where("genres = {1, 2, 3}"))
+
+	// Execute latest request
+	http.DefaultClient.Do(req)
+}
+
+func ExampleLimit() {
+	// Retrieve up to 1 result
+	req, _ := NewRequest("GET", "https://some-internet-game-database-api/games/", Limit(1))
+
+	// Retrieve up to 25 results
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Limit(25))
+
+	// Retrieve up to 50 results
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Limit(50))
+
+	// Execute latest request
+	http.DefaultClient.Do(req)
+}
+
+func ExampleOffset() {
+	// Retrieve the first batch of 10 results
+	req, _ := NewRequest("GET", "https://some-internet-game-database-api/games/", Limit(10))
+
+	// Retrieve the second batch of 10 results
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Limit(10), Offset(10))
+
+	// Retrieve the third batch of 10 results
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Limit(10), Offset(20))
+
+	// Retrieve the fourth batch of 10 results
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Limit(10), Offset(30))
+
+	http.DefaultClient.Do(req)
+}
+
+func ExampleSort() {
+	// Retrieve the most popular games
+	req, _ := NewRequest("GET", "https://some-internet-game-database-api/games/", Sort("popularity", "desc"))
+
+	// Retrieve the least popular games
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Sort("popularity", "asc"))
+
+	// Retrieve the earliest released games by their first release date
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Sort("first_release_date", "asc"))
+
+	// Retrieve games with the latest release date
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/games/", Sort("first_release_date", "desc"))
+
+	http.DefaultClient.Do(req)
+}
+
+func ExampleSearch() {
+	// Search for results with the name "Halo"
+	req, _ := NewRequest("GET", "https://some-internet-game-database-api/search/", Search("Halo"))
+
+	// Search for results with the name "Zelda"
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/search/", Search("Zelda"))
+
+	http.DefaultClient.Do(req)
 }

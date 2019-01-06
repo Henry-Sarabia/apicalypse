@@ -10,7 +10,7 @@ be supported here as well. To see the complete list of filters and their respect
 visit the Apicalypse syntax page [here](https://apicalypse.io/syntax/).
 
 If you would like to lend a hand with the package, please feel free to submit a pull request.
-Any and all contributions are greatly appreciated.
+Any and all contributions are welcome and appreciated!
 
 ## Installation
 
@@ -29,13 +29,11 @@ Then import the package into your project as you normally would.
 import "github.com/Henry-Sarabia/apicalypse"
 ```
 
-Now you're ready to Go.
-
 ## Usage
 
 ### Creating A New Request
 
-Creating a new request is as straightforward as you would imagine - simple use the 
+Creating a new request is as straightforward as you would imagine - simply use the 
 `NewRequest()` function as follows.
 
 ```go
@@ -70,7 +68,7 @@ from our friends at the totally, absolutely real myapi.com.
 To specify the limit of results we want returned from an API query, pass `Limit()` to the `NewRequest()`
 function.
 ```go
-req, err := apicalypse.NewRequest("GET", "https://myapi.com/actors, Limit(15))
+req, err := apicalypse.NewRequest("GET", "https://myapi.com/actors", Limit(15))
 ```
 It's no more difficult than that - we're ready to fetch up to 15 results!
 
@@ -87,3 +85,72 @@ age above 50 and a non-null movies field are returned.
 
 The remaining functional options are no more complicated than the examples presented here.
 Moreover, they are further described in the [documentation](https://godoc.org/github.com/Henry-Sarabia/apicalypse#FuncOption).
+
+### Functional Option Composition
+
+More often than not you will need to set multiple options for an API query.
+Fortunately, this functionality is supported through variadic functions and
+functional option composition.
+
+First, the `NewRequest()` function is variadic which means you can pass in any number of
+functional options.
+```go
+req, err := apicalypse.NewRequest(
+	"GET",
+	"https://myapi.com/actors",
+	Fields("name", "movies", "age"),
+	Where("age > 50 & movies != null"),
+	Limit(15),
+	)
+```
+Leveraging the variadic nature of the `NewRequest()` function, we have quickly and simply
+created a request with several different filters automatically applied to it.
+
+This request is now configured to return results with the fields "name", "movies", and "age".
+In addition, the results will be filtered so only results with age above 50 and a non-null 
+movies field are returned. Finally, only up to 15 results will be returned.
+
+Second, the `apicalypse` package provides a `ComposeOptions()` function which takes any number
+of functional options and composes them into a single, custom made, ready-to-use functional option.
+```go
+myOpt := apicalypse.ComposeOptions(
+	Fields("name", "movies", "age"),
+        Where("age > 50 & movies != null"),
+        Limit(15),
+	)
+```
+This call to `ComposeOptions()` creates a single functional option that performs the same
+filters we've been using up until now. The major difference is that now we only need to provide
+this new single functional option to any new requests that require those specific filters.
+```go
+req, err := apicalypse.NewRequest("GET", "https://myapi.com/actors", myOpt)
+```
+Of course, you can still pass in additional functional options if need be.
+
+For example, now that we've gathered our 15 results, perhaps we want the next 15. It's as simple
+as passing in one more functional option.
+```go
+req, err := apicalypse.NewRequest("GET", "https://myapi.com/actors", myOpt, Offset(15))
+```
+Our new request is ready to return the next 15 results!
+
+Functional option composition reduces duplicate code and helps keep your code
+DRY. You can even compose newly composed functional options for even more
+finely grained control over similar queries.
+
+## Contributions
+If you would like to contribute to this project, please adhere to the following
+guidelines.
+
+* Submit an issue describing the problem.
+* Fork the repo and add your contribution.
+* Add appropriate tests.
+* Run go fmt, go vet, and golint.
+* Prefer idiomatic Go over non-idiomatic code.
+* Follow the basic Go conventions found [here](https://github.com/golang/go/wiki/CodeReviewComments).
+* If in doubt, try to match your code to the current codebase.
+* Create a pull request with a description of your changes.
+
+I'll review pull requests as they come in and merge them if everything checks out.
+
+Again, any contribution is greatly appreciated!

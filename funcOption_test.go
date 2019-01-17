@@ -206,13 +206,16 @@ func TestSort(t *testing.T) {
 
 func TestSearch(t *testing.T) {
 	tests := []struct {
-		name     string
-		term     string
-		wantTerm string
-		wantErr  error
+		name    string
+		column  string
+		term    string
+		want    string
+		wantErr error
 	}{
-		{"Non-empty term", "halo", "halo", nil},
-		{"Empty term", "", "", ErrBlankArgument},
+		{"Non-empty column and non-empty term", "name", "halo", `name "halo"`, nil},
+		{"Empty column and non-empty term", "", "halo", `"halo"`, nil},
+		{"Non-empty column and empty term", "name", "", "", ErrBlankArgument},
+		{"Empty column and empty term", "", "", "", ErrBlankArgument},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -221,14 +224,14 @@ func TestSearch(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			err = Search(test.term)(opt)
+			err = Search(test.column, test.term)(opt)
 
 			if !reflect.DeepEqual(err, test.wantErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["search"] != test.wantTerm {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["search"], test.wantTerm)
+			if opt.Filters["search"] != test.want {
+				t.Errorf("got: <%v>, want: <%v>", opt.Filters["search"], test.want)
 			}
 		})
 	}
@@ -469,10 +472,10 @@ func ExampleSort() {
 
 func ExampleSearch() {
 	// Search for results with the name "Halo"
-	req, _ := NewRequest("GET", "https://some-internet-game-database-api/search/", Search("Halo"))
+	req, _ := NewRequest("GET", "https://some-internet-game-database-api/search/", Search("", "Halo"))
 
 	// Search for results with the name "Zelda"
-	req, _ = NewRequest("GET", "https://some-internet-game-database-api/search/", Search("Zelda"))
+	req, _ = NewRequest("GET", "https://some-internet-game-database-api/search/", Search("", "Zelda"))
 
 	http.DefaultClient.Do(req)
 }

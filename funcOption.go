@@ -124,14 +124,19 @@ func Sort(field, order string) FuncOption {
 	}
 }
 
-// Search is a functional option for searching for a value.
-func Search(term string) FuncOption {
+// Search is a functional option for searching for a value in a particular column of data.
+// If the column is omitted, search will be performed on the default column.
+func Search(column, term string) FuncOption {
 	return func(opt *options) error {
 		if isBlank(term) {
 			return ErrBlankArgument
 		}
 
-		opt.Filters["search"] = term
+		if !isBlank(column) {
+			column = column + " "
+		}
+
+		opt.Filters["search"] = column + `"` + term + `"`
 		return nil
 	}
 }

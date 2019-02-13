@@ -1,8 +1,8 @@
 package apicalypse
 
 import (
+	"github.com/Henry-Sarabia/whitespace"
 	"github.com/pkg/errors"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -44,13 +44,13 @@ func Fields(fields ...string) FuncOption {
 		}
 
 		for _, f := range fields {
-			if isBlank(f) {
+			if whitespace.IsBlank(f) {
 				return ErrBlankArgument
 			}
 		}
 
 		f := strings.Join(fields, ",")
-		f = removeWhitespace(f)
+		f = whitespace.Remove(f)
 		filters["fields"] = f
 
 		return nil
@@ -65,13 +65,13 @@ func Exclude(fields ...string) FuncOption {
 		}
 
 		for _, f := range fields {
-			if isBlank(f) {
+			if whitespace.IsBlank(f) {
 				return ErrBlankArgument
 			}
 		}
 
 		f := strings.Join(fields, ",")
-		f = removeWhitespace(f)
+		f = whitespace.Remove(f)
 		filters["exclude"] = f
 
 		return nil
@@ -88,7 +88,7 @@ func Where(custom ...string) FuncOption {
 		}
 
 		for _, f := range custom {
-			if isBlank(f) {
+			if whitespace.IsBlank(f) {
 				return ErrBlankArgument
 			}
 		}
@@ -129,7 +129,7 @@ func Offset(n int) FuncOption {
 // values and the use of "asc" or "desc" to sort by ascending or descending order.
 func Sort(field, order string) FuncOption {
 	return func(filters map[string]string) error {
-		if isBlank(field) || isBlank(order) {
+		if whitespace.IsBlank(field) || whitespace.IsBlank(order) {
 			return ErrBlankArgument
 		}
 
@@ -142,32 +142,15 @@ func Sort(field, order string) FuncOption {
 // If the column is omitted, search will be performed on the default column.
 func Search(column, term string) FuncOption {
 	return func(filters map[string]string) error {
-		if isBlank(term) {
+		if whitespace.IsBlank(term) {
 			return ErrBlankArgument
 		}
 
-		if !isBlank(column) {
+		if !whitespace.IsBlank(column) {
 			column = column + " "
 		}
 
 		filters["search"] = column + `"` + term + `"`
 		return nil
 	}
-}
-
-// removeWhitespace returns the provided string with all of the whitespace removed.
-// This includes spaces, tabs, newlines, returns, and form feeds.
-func removeWhitespace(s string) string {
-	space := regexp.MustCompile(`\s+`)
-	return space.ReplaceAllString(s, "")
-}
-
-// isBlank returns true if the provided string is empty or only consists of whitespace.
-// Returns false otherwise.
-func isBlank(s string) bool {
-	if removeWhitespace(s) == "" {
-		return true
-	}
-
-	return false
 }

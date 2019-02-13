@@ -12,12 +12,12 @@ func NewRequest(method string, url string, options ...FuncOption) (*http.Request
 		return nil, ErrBlankArgument
 	}
 
-	opt, err := newOptions(options...)
+	filters, err := newFilters(options...)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot create new options")
 	}
 
-	req, err := http.NewRequest(method, url, opt.reader())
+	req, err := http.NewRequest(method, url, toReader(filters))
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot create request with method '%s' for url '%s'", method, url)
 	}

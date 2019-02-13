@@ -16,15 +16,29 @@ var (
 	ErrNegativeInput = errors.New("input cannot be a negative number")
 )
 
-// FuncOption is a functional option type used to set the options for an API query.
+// FuncOption is a functional option type used to set the filters for an API query.
 // FuncOption is the first-order function returned by the available functional options
 // (e.g. Fields or Limit). For the full list of supported filters and their expected
 // syntax, please visit: https://apicalypse.io/syntax/
-type FuncOption func(*options) error
+type FuncOption func(map[string]string) error
+
+// ComposeOptions composes multiple functional options into a single FuncOption.
+// This is primarily used to create a single functional option that can be used
+// repeatedly across multiple queries.
+func ComposeOptions(funcOpts ...FuncOption) FuncOption {
+	return func(filters map[string]string) error {
+		for _, f := range funcOpts {
+			if err := f(filters); err != nil {
+				return errors.Wrap(err, "cannot compose functional options")
+			}
+		}
+		return nil
+	}
+}
 
 // Fields is a functional option for setting the included fields in the results from a query.
 func Fields(fields ...string) FuncOption {
-	return func(opt *options) error {
+	return func(filters map[string]string) error {
 		if len(fields) <= 0 {
 			return ErrMissingInput
 		}
@@ -37,7 +51,7 @@ func Fields(fields ...string) FuncOption {
 
 		f := strings.Join(fields, ",")
 		f = removeWhitespace(f)
-		opt.Filters["fields"] = f
+		filters["fields"] = f
 
 		return nil
 	}
@@ -45,7 +59,7 @@ func Fields(fields ...string) FuncOption {
 
 // Exclude is a functional option for setting the excluded fields in the results from a query.
 func Exclude(fields ...string) FuncOption {
-	return func(opt *options) error {
+	return func(filters map[string]string) error {
 		if len(fields) <= 0 {
 			return ErrMissingInput
 		}
@@ -58,7 +72,7 @@ func Exclude(fields ...string) FuncOption {
 
 		f := strings.Join(fields, ",")
 		f = removeWhitespace(f)
-		opt.Filters["exclude"] = f
+		filters["exclude"] = f
 
 		return nil
 	}
@@ -67,20 +81,20 @@ func Exclude(fields ...string) FuncOption {
 // Where is a functional option for setting a custom data filter similar to SQL.
 // If multiple filters are provided, they are AND'd together.
 // For the full list of filters and more information, visit: https://apicalypse.io/syntax/
-func Where(filters ...string) FuncOption {
-	return func(opt *options) error {
-		if len(filters) <= 0 {
+func Where(custom ...string) FuncOption {
+	return func(filters map[string]string) error {
+		if len(custom) <= 0 {
 			return ErrMissingInput
 		}
 
-		for _, f := range filters {
+		for _, f := range custom {
 			if isBlank(f) {
 				return ErrBlankArgument
 			}
 		}
 
-		f := strings.Join(filters, " & ")
-		opt.Filters["where"] = f
+		c := strings.Join(custom, " & ")
+		filters["where"] = c
 
 		return nil
 	}
@@ -89,11 +103,11 @@ func Where(filters ...string) FuncOption {
 // Limit is a functional option for setting the number of items to return from a query.
 // This usually has a maximum limit.
 func Limit(n int) FuncOption {
-	return func(opt *options) error {
+	return func(filters map[string]string) error {
 		if n < 0 {
 			return ErrNegativeInput
 		}
-		opt.Filters["limit"] = strconv.Itoa(n)
+		filters["limit"] = strconv.Itoa(n)
 
 		return nil
 	}
@@ -101,11 +115,11 @@ func Limit(n int) FuncOption {
 
 // Offset is a functional option for setting the index to start returning results from a query.
 func Offset(n int) FuncOption {
-	return func(opt *options) error {
+	return func(filters map[string]string) error {
 		if n < 0 {
 			return ErrNegativeInput
 		}
-		opt.Filters["offset"] = strconv.Itoa(n)
+		filters["offset"] = strconv.Itoa(n)
 
 		return nil
 	}
@@ -114,12 +128,12 @@ func Offset(n int) FuncOption {
 // Sort is a functional option for sorting the results of a query by a certain field's
 // values and the use of "asc" or "desc" to sort by ascending or descending order.
 func Sort(field, order string) FuncOption {
-	return func(opt *options) error {
+	return func(filters map[string]string) error {
 		if isBlank(field) || isBlank(order) {
 			return ErrBlankArgument
 		}
 
-		opt.Filters["sort"] = field + " " + order
+		filters["sort"] = field + " " + order
 		return nil
 	}
 }
@@ -127,7 +141,7 @@ func Sort(field, order string) FuncOption {
 // Search is a functional option for searching for a value in a particular column of data.
 // If the column is omitted, search will be performed on the default column.
 func Search(column, term string) FuncOption {
-	return func(opt *options) error {
+	return func(filters map[string]string) error {
 		if isBlank(term) {
 			return ErrBlankArgument
 		}
@@ -136,7 +150,7 @@ func Search(column, term string) FuncOption {
 			column = column + " "
 		}
 
-		opt.Filters["search"] = column + `"` + term + `"`
+		filters["search"] = column + `"` + term + `"`
 		return nil
 	}
 }

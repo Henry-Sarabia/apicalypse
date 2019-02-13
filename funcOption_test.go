@@ -2,10 +2,38 @@ package apicalypse
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"net/http"
 	"reflect"
 	"testing"
 )
+
+func TestComposeOptions(t *testing.T) {
+	tests := []struct {
+		name     string
+		funcOpts []FuncOption
+	}{
+		{"Zero options", []FuncOption{}},
+		{"Single option", []FuncOption{Limit(15)}},
+		{"Multiple options", []FuncOption{Limit(15), Fields("name", "rating")}},
+		{"Single error option", []FuncOption{Limit(-99)}},
+		{"Multiple error options", []FuncOption{Limit(-99), Fields()}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			comp := ComposeOptions(test.funcOpts...)
+
+			wantFilters, wantErr := newFilters(test.funcOpts...)
+			gotFilters, gotErr := newFilters(comp)
+			if !reflect.DeepEqual(errors.Cause(gotErr), errors.Cause(wantErr)) {
+				t.Errorf("got: <%v>, want: <%v>", errors.Cause(gotErr), errors.Cause(wantErr))
+			}
+			if !reflect.DeepEqual(gotFilters, wantFilters) {
+				t.Errorf("got: <%v>, want: <%v>", gotFilters, wantFilters)
+			}
+		})
+	}
+}
 
 func TestFields(t *testing.T) {
 	tests := []struct {
@@ -23,19 +51,19 @@ func TestFields(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOptions()
+			filters, err := newFilters()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			err = Fields(test.fields...)(opt)
+			err = Fields(test.fields...)(filters)
 
 			if !reflect.DeepEqual(err, test.wantErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["fields"] != test.wantFields {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["fields"], test.wantFields)
+			if filters["fields"] != test.wantFields {
+				t.Errorf("got: <%v>, want: <%v>", filters["fields"], test.wantFields)
 			}
 		})
 	}
@@ -57,19 +85,19 @@ func TestExclude(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOptions()
+			filters, err := newFilters()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			err = Exclude(test.fields...)(opt)
+			err = Exclude(test.fields...)(filters)
 
 			if !reflect.DeepEqual(err, test.wantErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["exclude"] != test.wantFields {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["exclude"], test.wantFields)
+			if filters["exclude"] != test.wantFields {
+				t.Errorf("got: <%v>, want: <%v>", filters["exclude"], test.wantFields)
 			}
 		})
 	}
@@ -91,19 +119,19 @@ func TestWhere(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOptions()
+			filters, err := newFilters()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			err = Where(test.filters...)(opt)
+			err = Where(test.filters...)(filters)
 
 			if !reflect.DeepEqual(err, test.wantErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["where"] != test.wantFilters {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["where"], test.wantFilters)
+			if filters["where"] != test.wantFilters {
+				t.Errorf("got: <%v>, want: <%v>", filters["where"], test.wantFilters)
 			}
 		})
 	}
@@ -122,19 +150,19 @@ func TestLimit(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOptions()
+			filters, err := newFilters()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			err = Limit(test.limit)(opt)
+			err = Limit(test.limit)(filters)
 
 			if !reflect.DeepEqual(err, test.wantErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["limit"] != test.wantLimit {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["limit"], test.wantLimit)
+			if filters["limit"] != test.wantLimit {
+				t.Errorf("got: <%v>, want: <%v>", filters["limit"], test.wantLimit)
 			}
 		})
 	}
@@ -153,19 +181,19 @@ func TestOffset(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOptions()
+			filters, err := newFilters()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			err = Offset(test.offset)(opt)
+			err = Offset(test.offset)(filters)
 
 			if !reflect.DeepEqual(err, test.wantErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["offset"] != test.wantOffset {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["offset"], test.wantOffset)
+			if filters["offset"] != test.wantOffset {
+				t.Errorf("got: <%v>, want: <%v>", filters["offset"], test.wantOffset)
 			}
 		})
 	}
@@ -186,19 +214,19 @@ func TestSort(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOptions()
+			filters, err := newFilters()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			err = Sort(test.field, test.order)(opt)
+			err = Sort(test.field, test.order)(filters)
 
 			if !reflect.DeepEqual(err, test.wantErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["sort"] != test.wantSort {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["sort"], test.wantSort)
+			if filters["sort"] != test.wantSort {
+				t.Errorf("got: <%v>, want: <%v>", filters["sort"], test.wantSort)
 			}
 		})
 	}
@@ -219,87 +247,19 @@ func TestSearch(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			opt, err := newOptions()
+			filters, err := newFilters()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			err = Search(test.column, test.term)(opt)
+			err = Search(test.column, test.term)(filters)
 
 			if !reflect.DeepEqual(err, test.wantErr) {
 				t.Errorf("got: <%v>, want: <%v>", err, test.wantErr)
 			}
 
-			if opt.Filters["search"] != test.want {
-				t.Errorf("got: <%v>, want: <%v>", opt.Filters["search"], test.want)
-			}
-		})
-	}
-}
-
-func TestRemoveWhitespace(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-		want  string
-	}{
-		{"Empty", "", ""},
-		{"Space", " ", ""},
-		{"Tab", "\t", ""},
-		{"Newline", "\n", ""},
-		{"Return", "\r", ""},
-		{"Mixed", " \t\n\r", ""},
-		{"Non-blank with space", "one two", "onetwo"},
-		{"Non-blank with tab", "one \t two", "onetwo"},
-		{"Non-blank with newline", "one\ntwo", "onetwo"},
-		{"Non-blank with return", "one\rtwo", "onetwo"},
-		{"Non-blank with mixed", "one \t\n\r two", "onetwo"},
-		{"Non-blank with surrounding space", " onetwo ", "onetwo"},
-		{"Non-blank with surrounding tab", "\t one\ttwo \t", "onetwo"},
-		{"Non-blank with surrounding newline", "\none\ntwo\n", "onetwo"},
-		{"Non-blank with surrounding return", "\rone\rtwo\r", "onetwo"},
-		{"Non-blank with surrounding mixed", "\t\n\r onetwo \t\n\r", "onetwo"},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			s := removeWhitespace(test.input)
-
-			if s != test.want {
-				t.Errorf("got: <%v>, want: <%v>", s, test.want)
-			}
-		})
-	}
-}
-
-func TestIsBlank(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-		want  bool
-	}{
-		{"Empty", "", true},
-		{"Space", " ", true},
-		{"Tab", "\t", true},
-		{"Newline", "\n", true},
-		{"Return", "\r", true},
-		{"Mixed", " \t\n\r", true},
-		{"Non-blank with space", "one two", false},
-		{"Non-blank with tab", "one \t two", false},
-		{"Non-blank with newline", "one\ntwo", false},
-		{"Non-blank with return", "one\rtwo", false},
-		{"Non-blank with mixed", "one \t\n\r two", false},
-		{"Non-blank with surrounding space", " onetwo ", false},
-		{"Non-blank with surrounding tab", "\t one\ttwo \t", false},
-		{"Non-blank with surrounding newline", "\none\ntwo\n", false},
-		{"Non-blank with surrounding return", "\rone\rtwo\r", false},
-		{"Non-blank with surrounding mixed", "\t\n\r onetwo \t\n\r", false},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			b := isBlank(test.input)
-
-			if b != test.want {
-				t.Errorf("got: <%v>, want: <%v>", b, test.want)
+			if filters["search"] != test.want {
+				t.Errorf("got: <%v>, want: <%v>", filters["search"], test.want)
 			}
 		})
 	}

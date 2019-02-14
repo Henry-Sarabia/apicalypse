@@ -11,13 +11,13 @@ import (
 func TestComposeOptions(t *testing.T) {
 	tests := []struct {
 		name     string
-		funcOpts []FuncOption
+		funcOpts []Option
 	}{
-		{"Zero options", []FuncOption{}},
-		{"Single option", []FuncOption{Limit(15)}},
-		{"Multiple options", []FuncOption{Limit(15), Fields("name", "rating")}},
-		{"Single error option", []FuncOption{Limit(-99)}},
-		{"Multiple error options", []FuncOption{Limit(-99), Fields()}},
+		{"Zero options", []Option{}},
+		{"Single option", []Option{Limit(15)}},
+		{"Multiple options", []Option{Limit(15), Fields("name", "rating")}},
+		{"Single error option", []Option{Limit(-99)}},
+		{"Multiple error options", []Option{Limit(-99), Fields()}},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

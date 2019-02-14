@@ -25,9 +25,9 @@ type Option func(map[string]string) error
 // ComposeOptions composes multiple functional options into a single Option.
 // This is primarily used to create a single functional option that can be used
 // repeatedly across multiple queries.
-func ComposeOptions(funcOpts ...Option) Option {
+func ComposeOptions(opts ...Option) Option {
 	return func(filters map[string]string) error {
-		for _, f := range funcOpts {
+		for _, f := range opts {
 			if err := f(filters); err != nil {
 				return errors.Wrap(err, "cannot compose functional options")
 			}

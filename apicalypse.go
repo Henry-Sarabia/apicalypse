@@ -11,6 +11,11 @@ import (
 // format and returns it as a string. The string is ready to be written into the
 // body of an HTTP Request.
 func Query(opts ...Option) (string, error) {
+	for _, opt := range opts {
+		if opt == nil {
+			return "", errors.New("a provided option is nil")
+		}
+	}
 	filters, err := newFilters(opts...)
 	if err != nil {
 		return "", errors.Wrap(err, "cannot create new filter map")

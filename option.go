@@ -87,14 +87,18 @@ func Where(custom ...string) Option {
 			return ErrMissingInput
 		}
 
-		for _, f := range custom {
-			if whitespace.IsBlank(f) {
+		for _, c := range custom {
+			if whitespace.IsBlank(c) {
 				return ErrBlankArgument
 			}
 		}
 
-		c := strings.Join(custom, " & ")
-		filters["where"] = c
+		if f, ok := filters["where"]; ok {
+			custom = append(custom, f)
+		}
+
+		j := strings.Join(custom, " & ")
+		filters["where"] = j
 
 		return nil
 	}

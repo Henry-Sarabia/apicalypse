@@ -5,9 +5,9 @@ import (
 	"strings"
 )
 
-// newFilters returns a filter map mutated by the provided FuncOption arguments.
-// If no FuncOption's are provided, an empty map is returned.
-func newFilters(funcOpts ...FuncOption) (map[string]string, error) {
+// newFilters returns a filter map mutated by the provided Option arguments.
+// If no Option's are provided, an empty map is returned.
+func newFilters(funcOpts ...Option) (map[string]string, error) {
 	filters := map[string]string{}
 
 	for _, f := range funcOpts {
@@ -31,11 +31,4 @@ func toString(f map[string]string) string {
 	}
 
 	return b.String()
-}
-
-// reader returns the filters as a *strings.Reader
-// to satisfy the io.Reader interface.
-func toReader(f map[string]string) *strings.Reader {
-	s := toString(f)
-	return strings.NewReader(s)
 }

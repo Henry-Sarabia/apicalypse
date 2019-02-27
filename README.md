@@ -31,14 +31,43 @@ import "github.com/Henry-Sarabia/apicalypse"
 
 ## Usage
 
-### Creating A New Request
+### Creating A New Query
 
-Creating a new request is as straightforward as you would imagine - simply use the 
-`NewRequest()` function as follows.
+Creating a new Apicalypse query is simple - use the provided `Query()` function along with whatever
+filters you need. In our example, we need a query that will limit the number of results to 25
+and retrieve an object's "name" and "age" fields.
 
 ```go
-req, err := apicalypse.NewRequest("GET", "https://myapi.com/actors")
+qry, err := apicalypse.Query(Limit(25), Fields("name", "age"))
+if err != nil {
+	// handle error
+}
 ```
+
+With that, we have a query ready to be sent to your favorite Apicalypse-powered API. This is sent
+primarily in the body of a GET request. Of course, this package makes that easy.
+
+### Creating A New Request
+
+The `apicalypse` package also provides a convenient `NewRequest()` function to get you up and 
+running. In this example, we need a request fulfulling the same requirements as the previous 
+example.
+
+```go
+req, err := apicalypse.NewRequest(
+	"GET", 
+	"https://myapi.com/actors", 
+	Limit(25), 
+	Fields("name", "age"),
+	)
+if err != nil {
+	// handle error
+}
+```
+
+Just like that, we have a request configured with the necessary filters. If we had any headers 
+that need their own configuration, this would be the time to do it. If not, the request can be sent
+off straight away.
 
 You may provide any method and URL to the function but be aware that the Apicalypse specifications
 recommend a simple GET request for the majority of cases. POST and PUT requests may be used
@@ -92,8 +121,8 @@ More often than not you will need to set multiple options for an API query.
 Fortunately, this functionality is supported through variadic functions and
 functional option composition.
 
-First, the `NewRequest()` function is variadic which means you can pass in any number of
-functional options.
+First, the `NewRequest()` and `Query()` functions are variadic which means you can pass in any 
+number of functional options.
 ```go
 req, err := apicalypse.NewRequest(
 	"GET",
@@ -103,7 +132,7 @@ req, err := apicalypse.NewRequest(
 	Limit(15),
 	)
 ```
-Leveraging the variadic nature of the `NewRequest()` function, we have quickly and simply
+Leveraging the variadic nature of our primary functions, we have quickly and simply
 created a request with several different filters automatically applied to it.
 
 This request is now configured to return results with the fields "name", "movies", and "age".

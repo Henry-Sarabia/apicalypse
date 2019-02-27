@@ -113,7 +113,7 @@ Our new request is now configured to filter the results so only the results whic
 age above 50 and a non-null movies field are returned.
 
 The remaining functional options are no more complicated than the examples presented here.
-Moreover, they are further described in the [documentation](https://godoc.org/github.com/Henry-Sarabia/apicalypse#FuncOption).
+Moreover, they are further described in the [documentation](https://godoc.org/github.com/Henry-Sarabia/apicalypse#Option).
 
 ### Functional Option Composition
 

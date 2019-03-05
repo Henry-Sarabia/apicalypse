@@ -1,7 +1,7 @@
 package apicalypse
 
 import (
-	"github.com/Henry-Sarabia/whitespace"
+	"github.com/Henry-Sarabia/blank"
 	"github.com/pkg/errors"
 	"net/http"
 	"strings"
@@ -27,7 +27,7 @@ func Query(opts ...Option) (string, error) {
 // NewRequest returns a request configured for the provided url using the provided method.
 // The provided query options are written to the body of the request. The default method is GET.
 func NewRequest(method string, url string, opts ...Option) (*http.Request, error) {
-	if whitespace.IsBlank(url) {
+	if blank.Is(url) {
 		return nil, ErrBlankArgument
 	}
 

@@ -1,7 +1,7 @@
 package apicalypse
 
 import (
-	"github.com/Henry-Sarabia/whitespace"
+	"github.com/Henry-Sarabia/blank"
 	"github.com/pkg/errors"
 	"strconv"
 	"strings"
@@ -44,13 +44,13 @@ func Fields(fields ...string) Option {
 		}
 
 		for _, f := range fields {
-			if whitespace.IsBlank(f) {
+			if blank.Is(f) {
 				return ErrBlankArgument
 			}
 		}
 
 		f := strings.Join(fields, ",")
-		f = whitespace.Remove(f)
+		f = blank.RemoveSpace(f)
 		filters["fields"] = f
 
 		return nil
@@ -65,13 +65,13 @@ func Exclude(fields ...string) Option {
 		}
 
 		for _, f := range fields {
-			if whitespace.IsBlank(f) {
+			if blank.Is(f) {
 				return ErrBlankArgument
 			}
 		}
 
 		f := strings.Join(fields, ",")
-		f = whitespace.Remove(f)
+		f = blank.RemoveSpace(f)
 		filters["exclude"] = f
 
 		return nil
@@ -88,7 +88,7 @@ func Where(custom ...string) Option {
 		}
 
 		for _, c := range custom {
-			if whitespace.IsBlank(c) {
+			if blank.Is(c) {
 				return ErrBlankArgument
 			}
 		}
@@ -133,7 +133,7 @@ func Offset(n int) Option {
 // values and the use of "asc" or "desc" to sort by ascending or descending order.
 func Sort(field, order string) Option {
 	return func(filters map[string]string) error {
-		if whitespace.IsBlank(field) || whitespace.IsBlank(order) {
+		if blank.Is(field) || blank.Is(order) {
 			return ErrBlankArgument
 		}
 
@@ -146,11 +146,11 @@ func Sort(field, order string) Option {
 // If the column is omitted, search will be performed on the default column.
 func Search(column, term string) Option {
 	return func(filters map[string]string) error {
-		if whitespace.IsBlank(term) {
+		if blank.Is(term) {
 			return ErrBlankArgument
 		}
 
-		if !whitespace.IsBlank(column) {
+		if !blank.Is(column) {
 			column = column + " "
 		}
 

@@ -50,7 +50,7 @@ func Fields(fields ...string) Option {
 		}
 
 		f := strings.Join(fields, ",")
-		f = blank.RemoveSpace(f)
+		f = blank.Remove(f)
 		filters["fields"] = f
 
 		return nil
@@ -71,7 +71,7 @@ func Exclude(fields ...string) Option {
 		}
 
 		f := strings.Join(fields, ",")
-		f = blank.RemoveSpace(f)
+		f = blank.Remove(f)
 		filters["exclude"] = f
 
 		return nil

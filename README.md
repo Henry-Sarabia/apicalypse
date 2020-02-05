@@ -1,9 +1,9 @@
 # Apicalypse
 
-[![GoDoc](https://godoc.org/github.com/Henry-Sarabia/apicalypse?status.svg)](https://godoc.org/github.com/Henry-Sarabia/apicalypse) [![Build Status](https://travis-ci.com/Henry-Sarabia/apicalypse.svg?branch=master)](https://travis-ci.com/Henry-Sarabia/apicalypse) [![Coverage Status](https://coveralls.io/repos/github/Henry-Sarabia/apicalypse/badge.svg?branch=master)](https://coveralls.io/github/Henry-Sarabia/apicalypse?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/henry-sarabia/apicalypse)](https://goreportcard.com/report/github.com/henry-sarabia/apicalypse)
+[![GoDoc](https://godoc.org/github.com/Henry-Sarabia/apicalypse?status.svg)](https://pkg.go.dev/github.com/Henry-Sarabia/apicalypse?tab=doc) [![Build Status](https://travis-ci.com/Henry-Sarabia/apicalypse.svg?branch=master)](https://travis-ci.com/Henry-Sarabia/apicalypse) [![Coverage Status](https://coveralls.io/repos/github/Henry-Sarabia/apicalypse/badge.svg?branch=master)](https://coveralls.io/github/Henry-Sarabia/apicalypse?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/henry-sarabia/apicalypse)](https://goreportcard.com/report/github.com/henry-sarabia/apicalypse)
 
-Create custom [Apicalypse](https://apicalypse.io/) compliant queries with the `apicalypse`
-[Go](https://golang.org/) package. With the `apicalypse` package, you can create queries with
+Create custom [Apicalypse](https://apicalypse.io/) compliant queries with the **apicalypse** package. 
+With the **apicalypse** package, you can create queries with
 any of the supported filters including: Fields, Exclude, Where, Limit, Offset, Sort, and Search. 
 The package will be kept up to date with Apicalypse - if more filters are introduced, they will
 be supported here as well. To see the complete list of filters and their respective syntax please
@@ -12,12 +12,13 @@ visit the Apicalypse syntax page [here](https://apicalypse.io/syntax/).
 If you would like to lend a hand with the package, please feel free to submit a pull request.
 Any and all contributions are welcome and appreciated!
 
+If you landed here but were looking for the **IGDB** package, you can find that [here](https://github.com/Henry-Sarabia/igdb).
 ## Installation
 
 If you do not have Go installed yet, you can find installation instructions 
 [here](https://golang.org/doc/install).
 
-To pull the most recent version of `apicalypse`, use `go get`.
+To pull the most recent version of **apicalypse**, use `go get`.
 
 ```
 go get github.com/Henry-Sarabia/apicalypse
@@ -49,7 +50,7 @@ primarily in the body of a GET request. Of course, this package makes that easy.
 
 ### Creating A New Request
 
-The `apicalypse` package also provides a convenient `NewRequest()` function to get you up and 
+The **apicalypse** package also provides a convenient `NewRequest()` function to get you up and 
 running. In this example, we need a request fulfulling the same requirements as the previous 
 example.
 
@@ -78,7 +79,7 @@ page [here](https://apicalypse.io/implementation/).
 
 ### Functional Options
 
-The `apicalypse` package uses functional options to apply the different query filters to
+The **apicalypse** package uses functional options to apply the different query filters to
 a request. More specifically, functional options are first-order functions that are passed 
 to the `NewRequest()` function. It's much simpler than it sounds and the package makes it
 easy!
@@ -139,7 +140,7 @@ This request is now configured to return results with the fields "name", "movies
 In addition, the results will be filtered so only results with age above 50 and a non-null 
 movies field are returned. Finally, only up to 15 results will be returned.
 
-Second, the `apicalypse` package provides a `ComposeOptions()` function which takes any number
+Second, the **apicalypse** package provides a `ComposeOptions()` function which takes any number
 of functional options and composes them into a single, custom made, ready-to-use functional option.
 ```go
 myOpt := apicalypse.ComposeOptions(
@@ -169,11 +170,11 @@ finely grained control over similar queries.
 
 ## Examples
 
-The repository contains a few examples that demonstrate how one could use the `apicalypse`
+The repository contains a few examples that demonstrate how one could use the **apicalypse**
 package. The examples can be found in their respective test files or be read conveniently on the
 GoDoc reference found [here](https://godoc.org/github.com/Henry-Sarabia/apicalypse#pkg-examples).
 
-If you have used the `apicalypse` package for a project and would like to have it featured
+If you have used the **apicalypse** package for a project and would like to have it featured
 here as a reference for new users, please submit an issue or pull request and I'll be sure to
 add it. Thank you!
 
